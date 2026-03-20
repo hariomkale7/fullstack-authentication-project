@@ -11,12 +11,12 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-secret')  # will come from Render env
+SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-secret')  # Will come from Render environment
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'  # Read DEBUG from environment
 
-ALLOWED_HOSTS = ["*"]  # Render will provide your domain
+ALLOWED_HOSTS = ["*"]  # Render allows all hosts, you can restrict to your domain later
 
 # Application definition
 INSTALLED_APPS = [
@@ -29,14 +29,11 @@ INSTALLED_APPS = [
 
     # Third-party apps
     'rest_framework',
-    'corsheaders',
-
-    # Your apps
-    # 'users', 'api', etc.
+    'corsheaders',  # CORS headers must be installed
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',  # CORS must be first
+    'corsheaders.middleware.CorsMiddleware',  # Must be at the top
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -64,9 +61,9 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'backend.wsgi.application'  # important: matches your project folder
+WSGI_APPLICATION = 'backend.wsgi.application'  # Important: matches your Django project folder
 
-# Database (default SQLite, you can change to PostgreSQL later)
+# Database (default SQLite, change to PostgreSQL later if needed)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -90,14 +87,15 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # Important for Render
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# CORS settings (allow all origins, important for frontend)
+# CORS settings (allow frontend on Netlify to call backend)
 CORS_ALLOW_ALL_ORIGINS = True
 
-# REST framework settings (if using JWT)
+# REST framework settings (if using JWT authentication)
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
