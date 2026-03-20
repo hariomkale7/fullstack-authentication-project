@@ -1,0 +1,79 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Sidebar from "./components/Sidebar";
+
+function Profile() {
+  const [user, setUser] = useState("");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/api/profile/", {
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("token")
+      }
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.user) setUser(data.user);
+        else navigate("/");
+      });
+  }, []);
+
+  const logout = () => {
+    localStorage.removeItem("token");
+    navigate("/");
+  };
+
+  return (
+    <div>
+      <Navbar />
+
+      <div style={styles.container}>
+        <Sidebar />
+
+        <div style={styles.main}>
+          <h1>Dashboard</h1>
+
+          <div style={styles.card}>
+            <h2>{user}</h2>
+            <p>Status: Active ✅</p>
+          </div>
+
+          <button style={styles.logout} onClick={logout}>
+            Logout
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const styles = {
+  container: { display: "flex" },
+
+  main: {
+    flex: 1,
+    padding: "30px",
+    background: "#f8fafc",
+    height: "100vh"
+  },
+
+  card: {
+    background: "#fff",
+    padding: "20px",
+    borderRadius: "12px",
+    boxShadow: "0 5px 20px rgba(0,0,0,0.05)"
+  },
+
+  logout: {
+    marginTop: "20px",
+    padding: "10px",
+    border: "1px solid red",
+    color: "red",
+    background: "transparent",
+    borderRadius: "8px"
+  }
+};
+
+export default Profile;
