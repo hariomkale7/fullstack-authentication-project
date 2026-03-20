@@ -7,18 +7,18 @@ function Profile() {
   const [user, setUser] = useState("");
   const navigate = useNavigate();
 
-  useEffect(() => {
+ useEffect(() => {
     fetch(`${process.env.REACT_APP_API_URL}/api/profile/`, {
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("token")
-      }
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
     })
-      .then(res => res.json())
-      .then(data => {
-        if (data.user) setUser(data.user);
-        else navigate("/");
-      });
-  }, []);
+    .then(res => res.json())
+    .then(data => setUser(data))
+    .catch(err => console.log(err));
+}, [navigate]); // add navigate here
 
   const logout = () => {
     localStorage.removeItem("token");
