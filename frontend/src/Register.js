@@ -1,27 +1,41 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaUser, FaLock, FaEnvelope } from "react-icons/fa";
 
 function Register() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleRegister = async () => {
-    await fetch(`${process.env.REACT_APP_API_URL}/api/register/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ username, email, password })
-    });
+    try {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/register/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ username, email, password })
+      });
 
-    alert("Registered Successfully ✅");
+      if (!res.ok) {
+        const errorData = await res.json();
+        alert(`Error: ${errorData.detail || "Registration failed"}`);
+        return;
+      }
+
+      const data = await res.json();
+      alert("Registered Successfully ✅");
+      navigate("/login"); // redirect to login after successful registration
+
+    } catch (err) {
+      console.error("Registration error:", err);
+      alert("An unexpected error occurred. Please try again.");
+    }
   };
 
   return (
     <div style={styles.container}>
-
       {/* LEFT */}
       <div style={styles.left}>
         <h1 style={styles.logo}>⚡ AuthFlow</h1>
@@ -53,11 +67,10 @@ function Register() {
           </button>
 
           <p style={styles.bottomText}>
-            Already have an account? <Link to="/">Login</Link>
+            Already have an account? <Link to="/login">Login</Link>
           </p>
         </div>
       </div>
-
     </div>
   );
 }
@@ -108,7 +121,8 @@ const styles = {
     borderRadius: "10px",
     border: "none",
     background: "linear-gradient(90deg,#4f46e5,#4338ca)",
-    color: "#fff"
+    color: "#fff",
+    cursor: "pointer"
   },
 
   bottomText: { marginTop: "15px", textAlign: "center" }

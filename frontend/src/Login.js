@@ -8,26 +8,34 @@ function Login() {
   const navigate = useNavigate();
 
   const handleLogin = async () => {
-    const res = await fetch(`${process.env.REACT_APP_API_URL}/api/login/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ username, password })
-    });
+    try {
+      // Fetch to backend using environment variable URL
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/login/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      });
 
-    const data = await res.json();
+      // Convert response to JSON
+      const data = await res.json();
 
-    if (data.access) {
-      localStorage.setItem("token", data.access);
-      navigate("/profile");
+      // If login is successful, store token and navigate
+      if (data.access) {
+        localStorage.setItem("token", data.access);
+        navigate("/profile");
+      } else {
+        alert("Login failed: " + (data.detail || "Unknown error"));
+      }
+    } catch (err) {
+      console.error("Login error:", err);
+      alert("Something went wrong. Check console.");
     }
   };
 
   return (
     <div style={styles.container}>
-      
-      {/* LEFT SIDE (Branding) */}
       <div style={styles.left}>
         <h1 style={styles.logo}>⚡ AuthFlow</h1>
         <p style={styles.tagline}>
@@ -35,7 +43,6 @@ function Login() {
         </p>
       </div>
 
-      {/* RIGHT SIDE (Form) */}
       <div style={styles.right}>
         <div style={styles.card}>
           <h2 style={styles.title}>Welcome Back</h2>
@@ -45,6 +52,7 @@ function Login() {
             <input
               style={styles.input}
               placeholder="Username"
+              value={username}
               onChange={(e) => setUsername(e.target.value)}
             />
           </div>
@@ -55,6 +63,7 @@ function Login() {
               style={styles.input}
               type="password"
               placeholder="Password"
+              value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
@@ -73,12 +82,7 @@ function Login() {
 }
 
 const styles = {
-  container: {
-    display: "flex",
-    height: "100vh",
-    fontFamily: "Inter"
-  },
-
+  container: { display: "flex", height: "100vh", fontFamily: "Inter" },
   left: {
     flex: 1,
     background: "linear-gradient(135deg, #4f46e5, #6366f1)",
@@ -86,41 +90,25 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
-    padding: "60px"
+    padding: "60px",
   },
-
-  logo: {
-    fontSize: "40px",
-    fontWeight: "700"
-  },
-
-  tagline: {
-    marginTop: "10px",
-    fontSize: "18px",
-    opacity: 0.9
-  },
-
+  logo: { fontSize: "40px", fontWeight: "700" },
+  tagline: { marginTop: "10px", fontSize: "18px", opacity: 0.9 },
   right: {
     flex: 1,
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    background: "#f8fafc"
+    background: "#f8fafc",
   },
-
   card: {
     background: "white",
     padding: "40px",
     borderRadius: "16px",
     width: "350px",
-    boxShadow: "0 20px 40px rgba(0,0,0,0.1)"
+    boxShadow: "0 20px 40px rgba(0,0,0,0.1)",
   },
-
-  title: {
-    marginBottom: "25px",
-    fontWeight: "600"
-  },
-
+  title: { marginBottom: "25px", fontWeight: "600" },
   inputGroup: {
     display: "flex",
     alignItems: "center",
@@ -128,16 +116,9 @@ const styles = {
     border: "1px solid #e2e8f0",
     padding: "12px",
     borderRadius: "10px",
-    marginBottom: "15px"
+    marginBottom: "15px",
   },
-
-  input: {
-    border: "none",
-    outline: "none",
-    width: "100%",
-    fontSize: "14px"
-  },
-
+  input: { border: "none", outline: "none", width: "100%", fontSize: "14px" },
   button: {
     width: "100%",
     padding: "12px",
@@ -147,14 +128,9 @@ const styles = {
     color: "#fff",
     fontWeight: "600",
     cursor: "pointer",
-    marginTop: "10px"
+    marginTop: "10px",
   },
-
-  bottomText: {
-    marginTop: "15px",
-    fontSize: "14px",
-    textAlign: "center"
-  }
+  bottomText: { marginTop: "15px", fontSize: "14px", textAlign: "center" },
 };
 
 export default Login;

@@ -4,25 +4,40 @@ import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 
 function Profile() {
-  const [user, setUser] = useState("");
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
- useEffect(() => {
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      // If no token, redirect to login
+      navigate("/login");
+      return;
+    }
+
+    // Fetch user profile from backend
     fetch(`${process.env.REACT_APP_API_URL}/api/profile/`, {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
     })
-    .then(res => res.json())
-    .then(data => setUser(data))
-    .catch(err => console.log(err));
-}, [navigate]); // add navigate here
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch profile");
+        return res.json();
+      })
+      .then((data) => setUser(data))
+      .catch((err) => {
+        console.error("Profile fetch error:", err);
+        // Redirect to login if token invalid or fetch fails
+        navigate("/login");
+      });
+  }, []); // run only once on mount
 
   const logout = () => {
     localStorage.removeItem("token");
-    navigate("/");
+    navigate("/login");
   };
 
   return (
@@ -36,7 +51,7 @@ function Profile() {
           <h1>Dashboard</h1>
 
           <div style={styles.card}>
-            <h2>{user}</h2>
+            <h2>{user ? user.username || user.email : "Loading..."}</h2>
             <p>Status: Active ✅</p>
           </div>
 
@@ -56,14 +71,14 @@ const styles = {
     flex: 1,
     padding: "30px",
     background: "#f8fafc",
-    height: "100vh"
+    height: "100vh",
   },
 
   card: {
     background: "#fff",
     padding: "20px",
     borderRadius: "12px",
-    boxShadow: "0 5px 20px rgba(0,0,0,0.05)"
+    boxShadow: "0 5px 20px rgba(0,0,0,0.05)",
   },
 
   logout: {
@@ -72,8 +87,9 @@ const styles = {
     border: "1px solid red",
     color: "red",
     background: "transparent",
-    borderRadius: "8px"
-  }
+    borderRadius: "8px",
+    cursor: "pointer",
+  },
 };
 
 export default Profile;
