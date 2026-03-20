@@ -8,7 +8,7 @@ function Profile() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/profile/", {
+    fetch(`${process.env.REACT_APP_API_URL}/api/profile/`, {
       headers: {
         Authorization: "Bearer " + localStorage.getItem("token")
       }
