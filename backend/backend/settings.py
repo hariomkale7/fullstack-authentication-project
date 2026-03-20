@@ -29,9 +29,12 @@ INSTALLED_APPS = [
 
     # Third-party apps
     'rest_framework',
-    'corsheaders',  # CORS headers must be installed
-]
+    'corsheaders',
 
+    # Your apps
+    'users',
+]
+AUTH_USER_MODEL = 'users.User'
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',  # Must be at the top
     'django.middleware.security.SecurityMiddleware',
